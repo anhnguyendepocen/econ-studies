@@ -1,0 +1,7 @@
+<query schema-version="1.0" lang="en" type="search" sig="HNm7qnE8MbEA8lrm4temYZ2xblQ">
+  <search-config>
+    <text-search>EC1231A1: Manufacturing: Geographic Area Series: Industry Statistics for the States, Metropolitan and Micropolitan Statistical Areas, Counties, and Places: 2012</text-search>
+    <topic-search dimension-name="d_dataset" dimension-value-name="2012 Economic Census"/>
+    <category-search type="geo" summary-level-code="310" name="All Metropolitan Statistical Areas within United States"/>
+  </search-config>
+</query>

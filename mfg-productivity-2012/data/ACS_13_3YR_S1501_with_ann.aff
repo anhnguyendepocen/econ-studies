@@ -1,0 +1,7 @@
+<query schema-version="1.0" lang="en" type="search" sig="KsVAF-wAW2fd5CPOMUjKjwnlp2Y">
+  <search-config>
+    <text-search>S1501</text-search>
+    <topic-search dimension-name="d_dataset" dimension-value-name="2013 ACS 3-year estimates"/>
+    <category-search type="geo" summary-level-code="310" name="All Metropolitan Statistical Areas within United States"/>
+  </search-config>
+</query>
