@@ -378,21 +378,27 @@ econ.census <- econ.census %>%
 How much does metro manufacturing productivity vary?  It ranges from $`r round(min(econ.census$Productivity))` per hour of labor in `r econ.census[nrow(econ.census),]$Metro` to $`r round(max(econ.census$Productivity))` in `r econ.census[1,]$Metro`.  That is a `r round(max(econ.census$Productivity)/min(econ.census$Productivity))`-fold difference.  The following table summarizes the manufacturing productivity values:
 
 ```{r, results='asis', echo=FALSE}
-library(xtable)
+library(pander)
 values <- data.frame(Productivity=econ.census$Productivity)
-options(xtable.comment = FALSE)
-options(xtable.booktabs = TRUE)
-xtable(summary(values), caption = "2012 Manufacturing Productivity Summary Statistics")
+panderOptions('table.split.table', 300)
+panderOptions('big.mark', ',')
+pandoc.table(summary(values), caption='Table 1: Summary of Metro Manufacturing Productivity in 2007')
 ```
 
-Now to examine the top and the bottom of the productivity spectrum
+Now to examine which metros are at the top and the bottom of the productivity spectrum
 
 ```{r, results='asis', echo=FALSE}
-xtable(head(econ.census[,c('Metro','Productivity')]), caption = "Metros with Highest Manufacturing Productivity")
+panderOptions('table.split.table', 300)
+panderOptions('big.mark', ',')
+pandoc.table(head(econ.census[,c('Metro','Productivity')]), caption='Table 2: Most Productive Metros in 2007')
 ```
 
 ```{r, results='asis', echo=FALSE}
-xtable(tail(econ.census[,c('Metro','Productivity')]), caption = "Metros with Lowest Manufacturing Productivity")
+prod.tail <- tail(econ.census[,c('Metro','Productivity')],addrownums=FALSE)
+row.names(prod.tail) <- NULL
+panderOptions('table.split.table', 300)
+panderOptions('big.mark', ',')
+pandoc.table(prod.tail, caption='Table 3: Least Productive Metros in 2007')
 ```
 
 ```{r, fig.margin = TRUE, fig.cap = "Manufacturing Productivity", message=FALSE, echo=FALSE, warning=FALSE}
@@ -450,7 +456,6 @@ study.data <- read.csv('data/state.fips.csv', colClass=c(rep('character',3))) %>
 The following is a recreation of the table presented in the origional report.  It provides descriptive statistics of the study data:
 
 ```{r, echo=FALSE, results='asis'}
-library(pander)
 descriptive.statistics <- data.frame('Variable'='Value Added per Prdn Worker Hour', 'Unit'='Dollars', 'Count'=nrow(study.data[!is.na(study.data$Productivity),]), 'Average'=mean(study.data$Productivity, na.rm=T), 'Median'=median(study.data$Productivity, na.rm=T), 'Max'=max(study.data$Productivity, na.rm=T), 'Min'=min(study.data$Productivity, na.rm=T), 'Range'=max(study.data$Productivity, na.rm=T)-min(study.data$Productivity, na.rm=T)) %>%
   rbind(., data.frame('Variable'='Population', 'Unit'='# people', 'Count'=nrow(study.data[!is.na(study.data$Population),]), 'Average'=mean(study.data$Population, na.rm=T), 'Median'=median(study.data$Population, na.rm=T), 'Max'=max(study.data$Population, na.rm=T), 'Min'=min(study.data$Population, na.rm=T), 'Range'=max(study.data$Population, na.rm=T)-min(study.data$Population, na.rm=T))) %>%
   rbind(., data.frame('Variable'='Manufacturing Employment', 'Unit'='# workers', 'Count'=nrow(study.data[!is.na(study.data$Manufacturing.employment),]), 'Average'=mean(study.data$Manufacturing.employment, na.rm=T), 'Median'=median(study.data$Manufacturing.employment, na.rm=T), 'Max'=max(study.data$Manufacturing.employment, na.rm=T), 'Min'=min(study.data$Manufacturing.employment, na.rm=T), 'Range'=max(study.data$Manufacturing.employment, na.rm=T)-min(study.data$Manufacturing.employment, na.rm=T))) %>%
@@ -472,7 +477,7 @@ descriptive.statistics <- data.frame('Variable'='Value Added per Prdn Worker Hou
   rbind(., data.frame('Variable'='% NonDurable', 'Unit'='%', 'Count'=nrow(study.data[!is.na(study.data$Percent.nondurable),]), 'Average'=mean(study.data$Percent.nondurable, na.rm=T), 'Median'=median(study.data$Percent.nondurable, na.rm=T), 'Max'=max(study.data$Percent.nondurable, na.rm=T), 'Min'=min(study.data$Percent.nondurable, na.rm=T), 'Range'=max(study.data$Percent.nondurable, na.rm=T)-min(study.data$Percent.nondurable, na.rm=T)))
 panderOptions('table.split.table', 300)
 panderOptions('big.mark', ',')
-pandoc.table(descriptive.statistics, style='rmarkdown')
+pandoc.table(descriptive.statistics, style='rmarkdown', caption='Table 4: Descriptive Statistics for Study Data')
 ```
 
 # Regresssion Model
@@ -518,5 +523,5 @@ lm.mtable <- mtable('Model 1' = lm.fit,
                     'Model 2' = lm2.fit,
                     summary.stats = c('N', 'adj. R-squared'))
 panderOptions('table.split.table', 300)
-pander(lm.mtable)
+pander(lm.mtable, caption='Table 5: Regression Model Results')
 ```

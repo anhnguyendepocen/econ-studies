@@ -309,10 +309,116 @@ STAXCD &lt;- read.csv('data/cbp07st.txt', colClass=c(rep('character',83))) %&gt;
 <div id="productivity-1" class="section level2">
 <h2>Productivity</h2>
 <p>How much does metro manufacturing productivity vary? It ranges from $43 per hour of labor in El Centro, CA to $638 in Cheyenne, WY. That is a 15-fold difference. The following table summarizes the manufacturing productivity values:</p>
-
-<p>Now to examine the top and the bottom of the productivity spectrum</p>
-
-
+<table>
+<caption>Table 1: Summary of Metro Manufacturing Productivity in 2007</caption>
+<colgroup>
+<col width="19%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Productivity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Min. : 42.58</td>
+</tr>
+<tr class="even">
+<td align="center">1st Qu.: 88.44</td>
+</tr>
+<tr class="odd">
+<td align="center">Median :106.31</td>
+</tr>
+<tr class="even">
+<td align="center">Mean :125.43</td>
+</tr>
+<tr class="odd">
+<td align="center">3rd Qu.:141.61</td>
+</tr>
+<tr class="even">
+<td align="center">Max. :637.64</td>
+</tr>
+</tbody>
+</table>
+<p>Now to examine which metros are at the top and the bottom of the productivity spectrum</p>
+<table>
+<caption>Table 2: Most Productive Metros in 2007</caption>
+<colgroup>
+<col width="23%"></col>
+<col width="19%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Metro</th>
+<th align="center">Productivity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Cheyenne, WY</td>
+<td align="center">637.6</td>
+</tr>
+<tr class="even">
+<td align="center">Lake Charles, LA</td>
+<td align="center">455.5</td>
+</tr>
+<tr class="odd">
+<td align="center">Alexandria, LA</td>
+<td align="center">426.4</td>
+</tr>
+<tr class="even">
+<td align="center">Billings, MT</td>
+<td align="center">375.3</td>
+</tr>
+<tr class="odd">
+<td align="center">Lima, OH</td>
+<td align="center">361.9</td>
+</tr>
+<tr class="even">
+<td align="center">Victoria, TX</td>
+<td align="center">334.3</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Table 3: Least Productive Metros in 2007</caption>
+<colgroup>
+<col width="43%"></col>
+<col width="19%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Metro</th>
+<th align="center">Productivity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Houma-Bayou Cane-Thibodaux, LA</td>
+<td align="center">53.46</td>
+</tr>
+<tr class="even">
+<td align="center">Jacksonville, NC</td>
+<td align="center">51.74</td>
+</tr>
+<tr class="odd">
+<td align="center">Lewiston, ID-WA</td>
+<td align="center">51.28</td>
+</tr>
+<tr class="even">
+<td align="center">Gadsden, AL</td>
+<td align="center">46.65</td>
+</tr>
+<tr class="odd">
+<td align="center">Kokomo, IN</td>
+<td align="center">46.48</td>
+</tr>
+<tr class="even">
+<td align="center">El Centro, CA</td>
+<td align="center">42.58</td>
+</tr>
+</tbody>
+</table>
 <p><img src="data:image/png;base64,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" alt="Manufacturing Productivity" /></p>
 </div>
 </div>
@@ -353,6 +459,7 @@ study.data &lt;- study.data %&gt;%
   arrange(-Productivity)</code></pre>
 <p>The following is a recreation of the table presented in the origional report. It provides descriptive statistics of the study data:</p>
 <table>
+<caption>Table 4: Descriptive Statistics for Study Data</caption>
 <thead>
 <tr class="header">
 <th align="center">Variable</th>
@@ -593,6 +700,7 @@ lm2.fit &lt;- lm(Productivity ~ ., lm2.data)</code></pre>
 <div id="regression-model-results" class="section level2">
 <h2>Regression Model Results</h2>
 <table>
+<caption>Table 5: Regression Model Results</caption>
 <colgroup>
 <col width="59%"></col>
 <col width="15%"></col>

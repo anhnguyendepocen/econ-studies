@@ -399,58 +399,64 @@ STAXCD <- STAXCD %>%
 
 How much does metro manufacturing productivity vary?  It ranges from $43 per hour of labor in El Centro, CA to $638 in Cheyenne, WY.  That is a 15-fold difference.  The following table summarizes the manufacturing productivity values:
 
-\begin{table}[ht]
-\centering
-\begin{tabular}{rl}
-  \toprule
- &  Productivity \\ 
-  \midrule
-1 & Min.   : 42.58   \\ 
-  2 & 1st Qu.: 88.44   \\ 
-  3 & Median :106.31   \\ 
-  4 & Mean   :125.43   \\ 
-  5 & 3rd Qu.:141.61   \\ 
-  6 & Max.   :637.64   \\ 
-   \bottomrule
-\end{tabular}
-\caption{2012 Manufacturing Productivity Summary Statistics} 
-\end{table}
 
-Now to examine the top and the bottom of the productivity spectrum
+--------------
+ Productivity 
+--------------
+Min.  : 42.58 
 
-\begin{table}[ht]
-\centering
-\begin{tabular}{rlr}
-  \toprule
- & Metro & Productivity \\ 
-  \midrule
-1 & Cheyenne, WY & 637.64 \\ 
-  2 & Lake Charles, LA & 455.52 \\ 
-  3 & Alexandria, LA & 426.35 \\ 
-  4 & Billings, MT & 375.28 \\ 
-  5 & Lima, OH & 361.95 \\ 
-  6 & Victoria, TX & 334.28 \\ 
-   \bottomrule
-\end{tabular}
-\caption{Metros with Highest Manufacturing Productivity} 
-\end{table}
+1st Qu.: 88.44
 
-\begin{table}[ht]
-\centering
-\begin{tabular}{rlr}
-  \toprule
- & Metro & Productivity \\ 
-  \midrule
-327 & Houma-Bayou Cane-Thibodaux, LA & 53.46 \\ 
-  328 & Jacksonville, NC & 51.74 \\ 
-  329 & Lewiston, ID-WA & 51.28 \\ 
-  330 & Gadsden, AL & 46.65 \\ 
-  331 & Kokomo, IN & 46.48 \\ 
-  332 & El Centro, CA & 42.58 \\ 
-   \bottomrule
-\end{tabular}
-\caption{Metros with Lowest Manufacturing Productivity} 
-\end{table}
+Median :106.31
+
+ Mean :125.43 
+
+3rd Qu.:141.61
+
+Max.  :637.64 
+--------------
+
+Table: Table 1: Summary of Metro Manufacturing Productivity in 2007
+
+Now to examine which metros are at the top and the bottom of the productivity spectrum
+
+
+-------------------------------
+     Metro        Productivity 
+---------------- --------------
+  Cheyenne, WY       637.6     
+
+Lake Charles, LA     455.5     
+
+ Alexandria, LA      426.4     
+
+  Billings, MT       375.3     
+
+    Lima, OH         361.9     
+
+  Victoria, TX       334.3     
+-------------------------------
+
+Table: Table 2: Most Productive Metros in 2007
+
+
+---------------------------------------------
+            Metro               Productivity 
+------------------------------ --------------
+Houma-Bayou Cane-Thibodaux, LA     53.46     
+
+       Jacksonville, NC            51.74     
+
+       Lewiston, ID-WA             51.28     
+
+         Gadsden, AL               46.65     
+
+          Kokomo, IN               46.48     
+
+        El Centro, CA              42.58     
+---------------------------------------------
+
+Table: Table 3: Least Productive Metros in 2007
 
 ![Manufacturing Productivity](README_files/figure-html/unnamed-chunk-36-1.png) 
 
@@ -528,6 +534,8 @@ The following is a recreation of the table presented in the origional report.  I
 |  Sum of Corp I/T & Other Taxes   | $ per worker |   331   |   494.5   |  451.3   |   3,485    |  84.4  |   3,401    |
 |   Capital per Prdn Worker Hour   |   Dollars    |   321   |   8.312   |  6.829   |   40.31    | 1.989  |   38.32    |
 |           % NonDurable           |      %       |   254   |   37.41   |  35.14   |   93.23    | 1.123  |    92.1    |
+
+Table: Table 4: Descriptive Statistics for Study Data
 
 # Regresssion Model
 
@@ -609,3 +617,5 @@ lm2.fit <- lm(Productivity ~ ., lm2.data)
 
             **adj. R-squared**               0.360      0.365   
 ----------------------------------------------------------------
+
+Table: Table 5: Regression Model Results
