@@ -1,12 +1,6 @@
----
-title: "Replication of Manufacturing Productivity in 2007"
-author: "Mike Silva"
-date: "April 2015"
-output:
-  html_document:
-    theme: cosmo
-    keep_md: true
----
+# Replication of Manufacturing Productivity in 2007
+Mike Silva  
+April 2015  
 
 # Introduction
 
@@ -18,13 +12,15 @@ This study is an attempt to replicate the work of Brunot and Kurrea ^[http://eri
 
 Consistent with Brunot and Kurrea's works this study uses data from the Econmic Census.  This data was downloaded from American FactFinder.^[2007 Economic Census data downloaded from at http://factfinder.census.gov/] First we read in the Economic Census data.  The first line contains meta data so we skip it.  We initially defined all variables as characters so as to not loose any data.  
 
-```{r}
+
+```r
 econ.census <- read.csv('data/ECN_2007_US_31A1_with_ann.csv',skip=1,colClass=c(rep('character',18))) 
 ```
 
-There are `r nrow(econ.census)` records initially in the data set.  First we will rename some of the variable names to make them clearer. 
+There are 363 records initially in the data set.  First we will rename some of the variable names to make them clearer. 
 
-```{r, message=FALSE, warning=FALSE}
+
+```r
 library(dplyr)
 econ.census <- econ.census %>%  
   rename(GeoFIPS=Id2) %>%  
@@ -37,14 +33,16 @@ econ.census <- econ.census %>%
 
 Next we will clean up the metro area names removing the redundant "Metro Area" form each of their names.  
 
-```{r}
+
+```r
 econ.census <- econ.census %>%  
   mutate(Metro = gsub(' Metro Area', '', Metro)) 
 ```
 
 Next we will change the variable types to numeric.  Nondisclosed data will create NA's in this process.  
 
-```{r, warning=FALSE}
+
+```r
 econ.census <- econ.census %>%  
   mutate(Value.added=as.numeric(Value.added)) %>%  
   mutate(Production.workers.annual.hours=as.numeric(Production.workers.annual.hours)) %>%  
@@ -58,14 +56,16 @@ econ.census <- econ.census %>%
 
 Following Brunot and Kurrea's definition, productivity is defined as the value added per hour of production worker labor.  
 
-```{r}
+
+```r
 econ.census <- econ.census %>%  
   mutate(Productivity=Value.added/Production.workers.annual.hours)
 ```
 
-There are `r nrow(econ.census[is.na(econ.census$Productivity),])` out of `r nrow(econ.census)` MSAs that do not have productivity data.  We will remove them from the study data set.  
+There are 31 out of 363 MSAs that do not have productivity data.  We will remove them from the study data set.  
 
-```{r}
+
+```r
 econ.census <- econ.census[!is.na(econ.census$Productivity),]
 ```
 
@@ -73,25 +73,27 @@ econ.census <- econ.census[!is.na(econ.census$Productivity),]
 
 We also created the change in capital stock per production worker hour variable using the same definition used by Brunot and Kurrea.  
 
-```{r}
+
+```r
 econ.census <- econ.census %>%  
   mutate(Capital.stock.per.production.worker.hour=Total.capital.expenditures/Production.workers.annual.hours)
 ```
 
-Of the `r nrow(econ.census)` with productivity  data, `r nrow(econ.census[is.na(econ.census$Capital.stock.per.production.worker.hour),])` did not have capital stock per production worker hour data.  
+Of the 332 with productivity  data, 10 did not have capital stock per production worker hour data.  
 
 ### Internal Economies of Scale
 
 Employment per establishment is used however we calculated all the same internal economies of scale measures.  
 
-```{r, warning=FALSE}
+
+```r
 econ.census <- econ.census %>%  
   mutate(Average.empt.per.establishment=Manufacturing.employment/Number.of.establishments) %>%  
   mutate(Percent.est.with.20.plus.employees=(Establishments.with.20.employees.or.more/Number.of.establishments)*100) %>%  
   mutate(Value.added.per.establishment=Value.added/Number.of.establishments)
 ```
 
-There are `r nrow(econ.census[is.na(econ.census$Average.empt.per.establishment),])` metro areas with no average employment per establishment.  
+There are 0 metro areas with no average employment per establishment.  
 
 ## Population Estimates
 
@@ -101,7 +103,8 @@ The Census Bureau's Population Estimates Program estimates of the population for
 
 The 2007 vintage data was downloaded.^[Population estimates downloaded from  http://www.census.gov/popest/data/historical/2000s/vintage_2007/metro.html] First we will pull in the data, rename the variables.  
 
-```{r, warning=FALSE}
+
+```r
 pop.est <- read.csv('data/CBSA-EST2007-01.csv', skip=2, colClass=c(rep('character',13))) %>%  
   mutate(GeoFIPS=ifelse(Metro.Division.Code=='', CBSA.Code, Metro.Division.Code)) %>%  
   rename(Population=Population.estimates) %>%  
@@ -110,25 +113,28 @@ pop.est <- read.csv('data/CBSA-EST2007-01.csv', skip=2, colClass=c(rep('characte
 
 The first 3 lines can be dropped as they are blank or descriptive in nature.
 
-```{r}
+
+```r
 pop.est <- pop.est[4:nrow(pop.est),]
 ```
 
 Now we will change the variable type:
 
-```{r}
+
+```r
 pop.est <- pop.est %>%
   mutate(Population=gsub(',','',Population)) %>%
   mutate(Population=as.numeric(Population))
 ```
 
-There are `r nrow(pop.est[is.na(pop.est$Population),])` record without data so we will drop it.
+There are 11 record without data so we will drop it.
 
-```{r}
+
+```r
 pop.est <- pop.est[!is.na(pop.est$Population),]
 ```
 
-There are `r nrow(pop.est)` records in this data set.
+There are 968 records in this data set.
 
 ## American Community Survey
 
@@ -140,7 +146,8 @@ This data comes from the 2006-2008 American Community Survey.  Like any sample s
 
 First we will pull in the data and rename the variables.  
 
-```{r}
+
+```r
 S1501 <- read.csv('data/ACS_08_3YR_S1501_with_ann.csv',colClass=c(rep('character',231))) %>%  
   rename(GeoFIPS=GEO.id2) %>%  
   rename(High.school.graduates=HC01_EST_VC09) %>%  
@@ -152,7 +159,8 @@ S1501 <- read.csv('data/ACS_08_3YR_S1501_with_ann.csv',colClass=c(rep('character
 
 Next we will drop all unneeded variables and change the data from a character to a number.  
 
-```{r, warning=FALSE}
+
+```r
 S1501 <- S1501 %>%   
   select(GeoFIPS, High.school.graduates, Associate.degree, Bachelors.degree, Graduate.degree, Bachelors.or.higher) %>%  
   mutate(High.school.graduates=as.numeric(High.school.graduates)) %>%  
@@ -162,19 +170,21 @@ S1501 <- S1501 %>%
   mutate(Bachelors.or.higher=as.numeric(Bachelors.or.higher))
 ```
 
-There are initially `r nrow(S1501)` records in this data set.  However the first record contains meta data so we dropped it.
+There are initially 364 records in this data set.  However the first record contains meta data so we dropped it.
 
-```{r}
+
+```r
 S1501 <- S1501[2:nrow(S1501),]
 ```
 
-There are now `r nrow(S1501)` records in this data set.
+There are now 363 records in this data set.
 
 ### Demographics
 
 Those in the 25-34 age group, not long out of  college, and those in the 55-64 age group, those contemplating retirement.  These demographic groups came from the 2006-08 American Community Survey data.
 
-```{r}
+
+```r
 S0101 <- read.csv('data/ACS_08_3YR_S0101_with_ann.csv', skip=1, colClass=c(rep('character',219))) %>%  
   rename(GeoFIPS=Id2) %>%  
   rename(Total.population=Total..Estimate..Total.population) %>%  
@@ -187,9 +197,10 @@ S0101 <- read.csv('data/ACS_08_3YR_S0101_with_ann.csv', skip=1, colClass=c(rep('
          People.55.to.59, People.60.to.64)
 ```
 
-Initially there are `r nrow(S0101)` records.  We will change the type to numeric:
+Initially there are 363 records.  We will change the type to numeric:
 
-```{r}
+
+```r
 S0101 <- S0101 %>%  
   mutate(Total.population=as.numeric(Total.population)) %>%  
   mutate(People.25.to.29=as.numeric(People.25.to.29)) %>%  
@@ -200,14 +211,15 @@ S0101 <- S0101 %>%
 
 Now we will create the group aggregates and compute the share of total population:  
 
-```{r}
+
+```r
 S0101 <- S0101 %>%  
   mutate(People.25.to.34 = People.25.to.29 + People.30.to.34) %>%  
   mutate(People.55.to.64 = People.55.to.59 + People.60.to.64) %>%  
   select(GeoFIPS, Total.population, People.25.to.34, People.55.to.64)
 ```
 
-There are `r nrow(S0101[is.na(S0101$People.25.to.34),])` metros missing a share of population 25 to 34 and `r nrow(S0101[is.na(S0101$People.55.to.64),])` metros missing a share of population 55 to 64 estimate.
+There are 0 metros missing a share of population 25 to 34 and 0 metros missing a share of population 55 to 64 estimate.
 
 ## U.S. Patent and Trademark Office
 
@@ -217,7 +229,8 @@ The patent data are from the U.S. Department of Commerce, United States Patent a
 
 We will scrape the web and pull the metro level data for the number of utility patents.
 
-```{r, cache=TRUE}
+
+```r
 library(rvest)
 pto <- html('http://www.uspto.gov/web/offices/ac/ido/oeip/taf/cls_cbsa/allcbsa_gd.htm') %>%  
   html_nodes('table') %>%  
@@ -228,22 +241,24 @@ pto <- html('http://www.uspto.gov/web/offices/ac/ido/oeip/taf/cls_cbsa/allcbsa_g
   select(GeoFIPS, Patents)
 ```
 
-There are `r nrow(pto)` metros with patent data.  For some reason the PTO GeoFIPS data has a leading 1.  We will remove it:
+There are 1025 metros with patent data.  For some reason the PTO GeoFIPS data has a leading 1.  We will remove it:
 
-```{r}
+
+```r
 pto <- pto %>%
   mutate(GeoFIPS = substr(GeoFIPS,2,6))
 ```
 
 We want to express the figures on a per 100,000 resident basis.  We will merge in the population estimates and computed the scaled patent rate.
 
-```{r}
+
+```r
 pto <- merge(pto, pop.est) %>%  
   mutate(Patents.per.100000=Patents/(Population/100000)) %>%  
   select(-Population)
 ```
 
-There are `r nrow(pto)` metros with patent per 100,000 rates.
+There are 932 metros with patent per 100,000 rates.
 
 ## Local Area Personal Income and Employment 
 
@@ -255,7 +270,8 @@ The BEA statistical areas are defined by OMB in bulletin no. 13-01 issued Februa
 
 We need the Manufacturing (500 line code) and Nondurable goods manufacturing (530 Line Code) for 2007.
 
-```{r}
+
+```r
 CA5N <- read.csv('data/CA5N_2001_2013_MSA.csv', colClass=c(rep('character',20))) %>%  
   select(GeoFIPS, LineCode, X2007) %>%  
   rename(Value = X2007) %>%  
@@ -264,7 +280,8 @@ CA5N <- read.csv('data/CA5N_2001_2013_MSA.csv', colClass=c(rep('character',20)))
 
 Some of the data has 'E' to represent an estimate.  We have removed them from the data and then converted the data to a number.
 
-```{r, warning=FALSE}
+
+```r
 library(tidyr)
 CA5N <- CA5N %>%  
   mutate(Value = as.numeric(gsub('E','',Value))) %>%  
@@ -274,13 +291,14 @@ names(CA5N) <- c('GeoFIPS','total','nondurable')
 CA5N$Percent.nondurable <- (CA5N$nondurable/CA5N$total)*100
 ```
 
-There are `r nrow(CA5N[is.na(CA5N$Percent.nondurable),])` NA's in this data which were removed.
+There are 82 NA's in this data which were removed.
 
-```{r, eval=FALSE}
+
+```r
 CA5N <- CA5N[!is.na(CA5N$Percent.nondurable), c('GeoFIPS','Percent.nondurable')]
 ```
 
-We have `r nrow(CA5N)` records with industry mix data.
+We have 381 records with industry mix data.
 
 ## Annual Survey of State Government Tax Collections
 
@@ -290,13 +308,15 @@ The Census Bureau's Annual Survey of State Government Tax Collections for 2007 w
 
 We use business taxes paid per employee for 2007. We consider both corporate net income taxes and “occupation and business taxes not elsewhere classified.”  First we will read in the data:
 
-```{r}
+
+```r
 STAXCD <- read.csv('data/07staxcd.txt', colClass=c(rep('character',100)))
 ```
 
 There are columns with in this dataset that have meta data (i.e. codes for footnotes).  These column's names begin with x (thanks to R's default behavior).  We need to drop these variables
 
-```{r}
+
+```r
 drops <- STAXCD %>%
   select(contains('X')) %>%
   select(-TX) %>%
@@ -307,7 +327,8 @@ STAXCD <- STAXCD[,!names(STAXCD) %in% drops]
 
 The data is arrange with the states going across and the type of tax going down.  We need to transform the data so the states go down and the tax types go across.  We also only need the corporation net income (T41) and occupation and business taxes nec (T28):
 
-```{r}
+
+```r
 STAXCD <- STAXCD %>%
   gather(Postal.Abbr., value, -ST) %>%
   filter(ifelse(ST=='T41' | ST=='T28',1,0)==1) %>%
@@ -318,7 +339,8 @@ STAXCD <- STAXCD %>%
 
 Then we need to change the variable types:
 
-```{r, warning=FALSE}
+
+```r
 STAXCD <- STAXCD %>% 
   mutate(Corporation.net.income.taxes=as.numeric(Corporation.net.income.taxes)) %>%  
   mutate(Occupation.and.business.taxes.nec=as.numeric(Occupation.and.business.taxes.nec))
@@ -326,7 +348,8 @@ STAXCD <- STAXCD %>%
 
 We need to merge in the state fips:
 
-```{r}
+
+```r
 STAXCD<- read.csv('data/state.fips.csv', colClass=c(rep('character',3))) %>%
   rename(fipstate = FIPS.Code) %>%
   select(Postal.Abbr., fipstate) %>%
@@ -341,7 +364,8 @@ County Business Patterns data was used to scale the state state level business t
 
 Next we will merge in in the county business patterns employment totals( all NAICS).
 
-```{r, message=FALSE}
+
+```r
 ## Due to GitHub filesize limitations we are not including this data so you will need to download it
 if(!file.exists('data/cbp07st.txt')){
   temp <- tempfile()
@@ -358,7 +382,8 @@ STAXCD <- read.csv('data/cbp07st.txt', colClass=c(rep('character',83))) %>%
 
 Now we can compute the business tax per employee rates:
 
-```{r}
+
+```r
 STAXCD <- STAXCD %>%  
   mutate(Corporate.net.income.tax.per.worker=(Corporation.net.income.taxes*1000)/emp) %>%  
   mutate(Other.business.taxes.per.worker=(Occupation.and.business.taxes.nec*1000)/emp) %>%  
@@ -370,41 +395,71 @@ STAXCD <- STAXCD %>%
 
 ## Productivity
 
-```{r, echo=FALSE}
-econ.census <- econ.census %>%  
-    arrange(-Productivity)
-```
 
-How much does metro manufacturing productivity vary?  It ranges from $`r round(min(econ.census$Productivity))` per hour of labor in `r econ.census[nrow(econ.census),]$Metro` to $`r round(max(econ.census$Productivity))` in `r econ.census[1,]$Metro`.  That is a `r round(max(econ.census$Productivity)/min(econ.census$Productivity))`-fold difference.  The following table summarizes the manufacturing productivity values:
 
-```{r, results='asis', echo=FALSE}
-library(xtable)
-values <- data.frame(Productivity=econ.census$Productivity)
-options(xtable.comment = FALSE)
-options(xtable.booktabs = TRUE)
-xtable(summary(values), caption = "2012 Manufacturing Productivity Summary Statistics")
-```
+How much does metro manufacturing productivity vary?  It ranges from $43 per hour of labor in El Centro, CA to $638 in Cheyenne, WY.  That is a 15-fold difference.  The following table summarizes the manufacturing productivity values:
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rl}
+  \toprule
+ &  Productivity \\ 
+  \midrule
+1 & Min.   : 42.58   \\ 
+  2 & 1st Qu.: 88.44   \\ 
+  3 & Median :106.31   \\ 
+  4 & Mean   :125.43   \\ 
+  5 & 3rd Qu.:141.61   \\ 
+  6 & Max.   :637.64   \\ 
+   \bottomrule
+\end{tabular}
+\caption{2012 Manufacturing Productivity Summary Statistics} 
+\end{table}
 
 Now to examine the top and the bottom of the productivity spectrum
 
-```{r, results='asis', echo=FALSE}
-xtable(head(econ.census[,c('Metro','Productivity')]), caption = "Metros with Highest Manufacturing Productivity")
-```
+\begin{table}[ht]
+\centering
+\begin{tabular}{rlr}
+  \toprule
+ & Metro & Productivity \\ 
+  \midrule
+1 & Cheyenne, WY & 637.64 \\ 
+  2 & Lake Charles, LA & 455.52 \\ 
+  3 & Alexandria, LA & 426.35 \\ 
+  4 & Billings, MT & 375.28 \\ 
+  5 & Lima, OH & 361.95 \\ 
+  6 & Victoria, TX & 334.28 \\ 
+   \bottomrule
+\end{tabular}
+\caption{Metros with Highest Manufacturing Productivity} 
+\end{table}
 
-```{r, results='asis', echo=FALSE}
-xtable(tail(econ.census[,c('Metro','Productivity')]), caption = "Metros with Lowest Manufacturing Productivity")
-```
+\begin{table}[ht]
+\centering
+\begin{tabular}{rlr}
+  \toprule
+ & Metro & Productivity \\ 
+  \midrule
+327 & Houma-Bayou Cane-Thibodaux, LA & 53.46 \\ 
+  328 & Jacksonville, NC & 51.74 \\ 
+  329 & Lewiston, ID-WA & 51.28 \\ 
+  330 & Gadsden, AL & 46.65 \\ 
+  331 & Kokomo, IN & 46.48 \\ 
+  332 & El Centro, CA & 42.58 \\ 
+   \bottomrule
+\end{tabular}
+\caption{Metros with Lowest Manufacturing Productivity} 
+\end{table}
 
-```{r, fig.margin = TRUE, fig.cap = "Manufacturing Productivity", message=FALSE, echo=FALSE, warning=FALSE}
-library(ggplot2)
-qplot(Productivity, data=econ.census, geom="histogram", binwidth=10)
-```
+![Manufacturing Productivity](README_files/figure-html/unnamed-chunk-36-1.png) 
 
 # Study Data
 
 The authors used a subset of the data for their regression models.  We will create the study data by merging together the raw data sources:
 
-```{r}
+
+```r
 study.data <- econ.census %>%  
   select(GeoFIPS, Metro, Productivity, Manufacturing.employment, 
          Average.empt.per.establishment, 
@@ -421,7 +476,8 @@ study.data <- econ.census %>%
 
 In order to merge in the business taxes data we followed Brunot and Kurre's method of using the state rate for the first state listed in the MSA's name.  To do that I will use a function to pull out the state abbreviation:
 
-```{r}
+
+```r
 get.state.abbr <- function(name){
   name <- strsplit(name, ',')
   name <- name[[1]][2] # Get the state abbreviation
@@ -436,7 +492,8 @@ study.data <- study.data %>%
 
 Next I will pull in a crosswalk that will let me get the state fips code.^[State FIPS code crosswalk found online at: http://www.bls.gov/cew/cewedr10.htm]  
 
-```{r}
+
+```r
 study.data <- read.csv('data/state.fips.csv', colClass=c(rep('character',3))) %>%
   rename(state.abbr = Postal.Abbr.) %>%
   rename(fipstate = FIPS.Code) %>%
@@ -449,31 +506,28 @@ study.data <- read.csv('data/state.fips.csv', colClass=c(rep('character',3))) %>
 
 The following is a recreation of the table presented in the origional report.  It provides descriptive statistics of the study data:
 
-```{r, echo=FALSE, results='asis'}
-library(pander)
-descriptive.statistics <- data.frame('Variable'='Value Added per Prdn Worker Hour', 'Unit'='Dollars', 'Count'=nrow(study.data[!is.na(study.data$Productivity),]), 'Average'=mean(study.data$Productivity, na.rm=T), 'Median'=median(study.data$Productivity, na.rm=T), 'Max'=max(study.data$Productivity, na.rm=T), 'Min'=min(study.data$Productivity, na.rm=T), 'Range'=max(study.data$Productivity, na.rm=T)-min(study.data$Productivity, na.rm=T)) %>%
-  rbind(., data.frame('Variable'='Population', 'Unit'='# people', 'Count'=nrow(study.data[!is.na(study.data$Population),]), 'Average'=mean(study.data$Population, na.rm=T), 'Median'=median(study.data$Population, na.rm=T), 'Max'=max(study.data$Population, na.rm=T), 'Min'=min(study.data$Population, na.rm=T), 'Range'=max(study.data$Population, na.rm=T)-min(study.data$Population, na.rm=T))) %>%
-  rbind(., data.frame('Variable'='Manufacturing Employment', 'Unit'='# workers', 'Count'=nrow(study.data[!is.na(study.data$Manufacturing.employment),]), 'Average'=mean(study.data$Manufacturing.employment, na.rm=T), 'Median'=median(study.data$Manufacturing.employment, na.rm=T), 'Max'=max(study.data$Manufacturing.employment, na.rm=T), 'Min'=min(study.data$Manufacturing.employment, na.rm=T), 'Range'=max(study.data$Manufacturing.employment, na.rm=T)-min(study.data$Manufacturing.employment, na.rm=T))) %>%
-  rbind(., data.frame('Variable'='Average Empt per Establishment', 'Unit'='# workers', 'Count'=nrow(study.data[!is.na(study.data$Average.empt.per.establishment),]), 'Average'=mean(study.data$Average.empt.per.establishment, na.rm=T), 'Median'=median(study.data$Average.empt.per.establishment, na.rm=T), 'Max'=max(study.data$Average.empt.per.establishment, na.rm=T), 'Min'=min(study.data$Average.empt.per.establishment, na.rm=T), 'Range'=max(study.data$Average.empt.per.establishment, na.rm=T)-min(study.data$Average.empt.per.establishment, na.rm=T))) %>%
-  rbind(., data.frame('Variable'='% of Ests with >20 Employees', 'Unit'='%', 'Count'=nrow(study.data[!is.na(study.data$Percent.est.with.20.plus.employees),]), 'Average'=mean(study.data$Percent.est.with.20.plus.employees, na.rm=T), 'Median'=median(study.data$Percent.est.with.20.plus.employees, na.rm=T), 'Max'=max(study.data$Percent.est.with.20.plus.employees, na.rm=T), 'Min'=min(study.data$Percent.est.with.20.plus.employees, na.rm=T), 'Range'=max(study.data$Percent.est.with.20.plus.employees, na.rm=T)-min(study.data$Percent.est.with.20.plus.employees, na.rm=T))) %>%
-  rbind(., data.frame('Variable'='Value Added per Establishment', 'Unit'='$ thousands', 'Count'=nrow(study.data[!is.na(study.data$Value.added.per.establishment),]), 'Average'=mean(study.data$Value.added.per.establishment, na.rm=T), 'Median'=median(study.data$Value.added.per.establishment, na.rm=T), 'Max'=max(study.data$Value.added.per.establishment, na.rm=T), 'Min'=min(study.data$Value.added.per.establishment, na.rm=T), 'Range'=max(study.data$Value.added.per.establishment, na.rm=T)-min(study.data$Value.added.per.establishment, na.rm=T))) %>%
-  rbind(., data.frame('Variable'='Patents per 100,000 Population', 'Unit'='# patents', 'Count'=nrow(study.data[!is.na(study.data$Patents.per.100000),]), 'Average'=mean(study.data$Patents.per.100000, na.rm=T), 'Median'=median(study.data$Patents.per.100000, na.rm=T), 'Max'=max(study.data$Patents.per.100000, na.rm=T), 'Min'=min(study.data$Patents.per.100000, na.rm=T), 'Range'=max(study.data$Patents.per.100000, na.rm=T)-min(study.data$Patents.per.100000, na.rm=T))) %>%
-  rbind(., data.frame('Variable'='% High School Graduates', 'Unit'='%', 'Count'=nrow(study.data[!is.na(study.data$High.school.graduates),]), 'Average'=mean(study.data$High.school.graduates, na.rm=T), 'Median'=median(study.data$High.school.graduates, na.rm=T), 'Max'=max(study.data$High.school.graduates, na.rm=T), 'Min'=min(study.data$High.school.graduates, na.rm=T), 'Range'=max(study.data$High.school.graduates, na.rm=T)-min(study.data$High.school.graduates, na.rm=T))) %>%
-  rbind(., data.frame('Variable'='% Associate Degree', 'Unit'='%', 'Count'=nrow(study.data[!is.na(study.data$Associate.degree),]), 'Average'=mean(study.data$Associate.degree, na.rm=T), 'Median'=median(study.data$Associate.degree, na.rm=T), 'Max'=max(study.data$Associate.degree, na.rm=T), 'Min'=min(study.data$Associate.degree, na.rm=T), 'Range'=max(study.data$Associate.degree, na.rm=T)-min(study.data$Associate.degree, na.rm=T))) %>%
-  rbind(., data.frame('Variable'="% Bachelor's Degree", 'Unit'='%', 'Count'=nrow(study.data[!is.na(study.data$Bachelors.degree),]), 'Average'=mean(study.data$Bachelors.degree, na.rm=T), 'Median'=median(study.data$Bachelors.degree, na.rm=T), 'Max'=max(study.data$Bachelors.degree, na.rm=T), 'Min'=min(study.data$Bachelors.degree, na.rm=T), 'Range'=max(study.data$Bachelors.degree, na.rm=T)-min(study.data$Bachelors.degree, na.rm=T))) %>%
-  rbind(., data.frame('Variable'='% Graduate Degree', 'Unit'='%', 'Count'=nrow(study.data[!is.na(study.data$Graduate.degree),]), 'Average'=mean(study.data$Graduate.degree, na.rm=T), 'Median'=median(study.data$Graduate.degree, na.rm=T), 'Max'=max(study.data$Graduate.degree, na.rm=T), 'Min'=min(study.data$Graduate.degree, na.rm=T), 'Range'=max(study.data$Graduate.degree, na.rm=T)-min(study.data$Graduate.degree, na.rm=T))) %>%
-  rbind(., data.frame('Variable'="% Bachelor's or Higher", 'Unit'='%', 'Count'=nrow(study.data[!is.na(study.data$Bachelors.or.higher),]), 'Average'=mean(study.data$Bachelors.or.higher, na.rm=T), 'Median'=median(study.data$Bachelors.or.higher, na.rm=T), 'Max'=max(study.data$Bachelors.or.higher, na.rm=T), 'Min'=min(study.data$Bachelors.or.higher, na.rm=T), 'Range'=max(study.data$Bachelors.or.higher, na.rm=T)-min(study.data$Bachelors.or.higher, na.rm=T))) %>%
-  rbind(., data.frame('Variable'='% 25-34 Years of Age', 'Unit'='%', 'Count'=nrow(study.data[!is.na(study.data$People.25.to.34),]), 'Average'=mean(study.data$People.25.to.34, na.rm=T), 'Median'=median(study.data$People.25.to.34, na.rm=T), 'Max'=max(study.data$People.25.to.34, na.rm=T), 'Min'=min(study.data$People.25.to.34, na.rm=T), 'Range'=max(study.data$People.25.to.34, na.rm=T)-min(study.data$People.25.to.34, na.rm=T))) %>%
-  rbind(., data.frame('Variable'='% 55-64 Years of Age', 'Unit'='%', 'Count'=nrow(study.data[!is.na(study.data$People.55.to.64),]), 'Average'=mean(study.data$People.55.to.64, na.rm=T), 'Median'=median(study.data$People.55.to.64, na.rm=T), 'Max'=max(study.data$People.55.to.64, na.rm=T), 'Min'=min(study.data$People.55.to.64, na.rm=T), 'Range'=max(study.data$People.55.to.64, na.rm=T)-min(study.data$People.55.to.64, na.rm=T))) %>%
-  rbind(., data.frame('Variable'='Corporate Net Income Tax', 'Unit'='$ per worker', 'Count'=nrow(study.data[!is.na(study.data$Corporate.net.income.tax.per.worker),]), 'Average'=mean(study.data$Corporate.net.income.tax.per.worker, na.rm=T), 'Median'=median(study.data$Corporate.net.income.tax.per.worker, na.rm=T), 'Max'=max(study.data$Corporate.net.income.tax.per.worker, na.rm=T), 'Min'=min(study.data$Corporate.net.income.tax.per.worker, na.rm=T), 'Range'=max(study.data$Corporate.net.income.tax.per.worker, na.rm=T)-min(study.data$Corporate.net.income.tax.per.worker, na.rm=T))) %>%
-  rbind(., data.frame('Variable'='Other Business Taxes', 'Unit'='$ per worker', 'Count'=nrow(study.data[!is.na(study.data$Other.business.taxes.per.worker),]), 'Average'=mean(study.data$Other.business.taxes.per.worker, na.rm=T), 'Median'=median(study.data$Other.business.taxes.per.worker, na.rm=T), 'Max'=max(study.data$Other.business.taxes.per.worker, na.rm=T), 'Min'=min(study.data$Other.business.taxes.per.worker, na.rm=T), 'Range'=max(study.data$Other.business.taxes.per.worker, na.rm=T)-min(study.data$Other.business.taxes.per.worker, na.rm=T))) %>%
-  rbind(., data.frame('Variable'='Sum of Corp I/T & Other Taxes', 'Unit'='$ per worker', 'Count'=nrow(study.data[!is.na(study.data$Business.taxes.per.worker),]), 'Average'=mean(study.data$Business.taxes.per.worker, na.rm=T), 'Median'=median(study.data$Business.taxes.per.worker, na.rm=T), 'Max'=max(study.data$Business.taxes.per.worker, na.rm=T), 'Min'=min(study.data$Business.taxes.per.worker, na.rm=T), 'Range'=max(study.data$Business.taxes.per.worker, na.rm=T)-min(study.data$Business.taxes.per.worker, na.rm=T))) %>%
-  rbind(., data.frame('Variable'='Capital per Prdn Worker Hour', 'Unit'='Dollars', 'Count'=nrow(study.data[!is.na(study.data$Capital.stock.per.production.worker.hour),]), 'Average'=mean(study.data$Capital.stock.per.production.worker.hour, na.rm=T), 'Median'=median(study.data$Capital.stock.per.production.worker.hour, na.rm=T), 'Max'=max(study.data$Capital.stock.per.production.worker.hour, na.rm=T), 'Min'=min(study.data$Capital.stock.per.production.worker.hour, na.rm=T), 'Range'=max(study.data$Capital.stock.per.production.worker.hour, na.rm=T)-min(study.data$Capital.stock.per.production.worker.hour, na.rm=T))) %>%
-  rbind(., data.frame('Variable'='% NonDurable', 'Unit'='%', 'Count'=nrow(study.data[!is.na(study.data$Percent.nondurable),]), 'Average'=mean(study.data$Percent.nondurable, na.rm=T), 'Median'=median(study.data$Percent.nondurable, na.rm=T), 'Max'=max(study.data$Percent.nondurable, na.rm=T), 'Min'=min(study.data$Percent.nondurable, na.rm=T), 'Range'=max(study.data$Percent.nondurable, na.rm=T)-min(study.data$Percent.nondurable, na.rm=T)))
-panderOptions('table.split.table', 300)
-panderOptions('big.mark', ',')
-pandoc.table(descriptive.statistics, style='rmarkdown')
-```
+
+|             Variable             |     Unit     |  Count  |  Average  |  Median  |    Max     |  Min   |   Range    |
+|:--------------------------------:|:------------:|:-------:|:---------:|:--------:|:----------:|:------:|:----------:|
+| Value Added per Prdn Worker Hour |   Dollars    |   331   |   125.4   |   106    |   637.6    | 42.58  |   595.1    |
+|            Population            |   # people   |   331   |  710,498  | 238,555  | 18,815,988 | 54,939 | 18,761,049 |
+|     Manufacturing Employment     |  # workers   |   331   |  30,625   |  11,764  |  628,771   |  430   |  628,341   |
+|  Average Empt per Establishment  |  # workers   |   331   |   44.99   |  43.57   |   149.9    | 6.719  |   143.1    |
+|   % of Ests with >20 Employees   |      %       |   331   |   31.53   |  32.46   |    53.4    | 4.688  |   48.72    |
+|  Value Added per Establishment   | $ thousands  |   331   |   8,189   |  6,903   |   43,767   |  857   |   42,910   |
+|  Patents per 100,000 Population  |  # patents   |   328   |   22.29   |  10.89   |   398.7    |   0    |   398.7    |
+|     % High School Graduates      |      %       |   330   |   31.11   |   31.2   |    48.5    |  14.6  |    33.9    |
+|        % Associate Degree        |      %       |   330   |   7.918   |   7.8    |     13     |  3.6   |    9.4     |
+|       % Bachelor's Degree        |      %       |   330   |   15.8    |  15.65   |    31.7    |  7.5   |    24.2    |
+|        % Graduate Degree         |      %       |   330   |   8.976   |    8     |    28.9    |  3.3   |    25.6    |
+|      % Bachelor's or Higher      |      %       |   330   |   24.79   |  23.95   |    55.9    |   11   |    44.9    |
+|       % 25-34 Years of Age       |      %       |   330   |   13.34   |   13.2   |    18.6    |  10.1  |    8.5     |
+|       % 55-64 Years of Age       |      %       |   330   |   10.88   |   11.1   |    14.1    |   6    |    8.1     |
+|     Corporate Net Income Tax     | $ per worker |   331   |   402.3   |  371.7   |   3,327    |   0    |   3,327    |
+|       Other Business Taxes       | $ per worker |   331   |   92.13   |  72.77   |   607.4    |  14.8  |   592.6    |
+|  Sum of Corp I/T & Other Taxes   | $ per worker |   331   |   494.5   |  451.3   |   3,485    |  84.4  |   3,401    |
+|   Capital per Prdn Worker Hour   |   Dollars    |   321   |   8.312   |  6.829   |   40.31    | 1.989  |   38.32    |
+|           % NonDurable           |      %       |   254   |   37.41   |  35.14   |   93.23    | 1.123  |    92.1    |
 
 # Regresssion Model
 
@@ -481,7 +535,8 @@ Now that we have study data we can create the linear regression models that  the
 
 ## Model 1
 
-```{r}
+
+```r
 lm.data <- study.data %>%  
   select(Productivity, Population, Average.empt.per.establishment, Patents.per.100000, Bachelors.degree, People.55.to.64, Corporate.net.income.tax.per.worker, Capital.stock.per.production.worker.hour, Percent.nondurable) %>%  
   mutate(Population.Squared = Population * Population) %>%  
@@ -502,7 +557,8 @@ lm.fit <- lm(Productivity ~ ., lm.data)
 
 ## Model 2
 
-```{r}
+
+```r
 lm2.data <- lm.data %>%
   select(-Patents.per.Capita, -Corp.Income.Tax)
 
@@ -512,11 +568,44 @@ lm2.fit <- lm(Productivity ~ ., lm2.data)
 ```
 
 ## Regression Model Results
-```{r, echo=FALSE, message=FALSE, results='asis'}
-library(memisc)
-lm.mtable <- mtable('Model 1' = lm.fit,
-                    'Model 2' = lm2.fit,
-                    summary.stats = c('N', 'adj. R-squared'))
-panderOptions('table.split.table', 300)
-pander(lm.mtable)
-```
+
+----------------------------------------------------------------
+                  &nbsp;                    Model 1    Model 2  
+------------------------------------------ ---------- ----------
+             **(Intercept)**               -80.688*\  -80.306*\ 
+                                            (36.682)   (35.733) 
+
+              **Population**                0.000*\    0.000*\  
+                                           (0.000)    (0.000)   
+
+          **Population.Squared**            -0.000\    -0.000\  
+                                           (0.000)    (0.000)   
+
+     **Employment.per.Establishment**       0.454*\    0.446*\  
+                                           (0.195)    (0.188)   
+
+          **Patents.per.Capita**            -0.051\       \     
+                                           (0.152)              
+
+       **Percent.Bachelor.Degree**         2.664**\   2.494**\  
+                                           (0.997)    (0.854)   
+
+       **Percent.55.to.64.Yr.Olds**         5.040*\    5.044*\  
+                                           (2.438)    (2.429)   
+
+           **Corp.Income.Tax**              -0.005\       \     
+                                           (0.011)              
+
+     **Capital.per.Prdn.Worker.Hour**      8.886***\  8.805***\ 
+                                            (1.878)    (1.864)  
+
+ **Capital.per.Prdn.Worker.Hour.Squared**   -0.091\    -0.088\  
+                                           (0.051)    (0.050)   
+
+         **Percent.NonDurables**            0.504*\   0.510**\  
+                                           (0.195)    (0.184)   
+
+                  **N**                       246        246    
+
+            **adj. R-squared**               0.360      0.365   
+----------------------------------------------------------------
