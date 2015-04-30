@@ -382,24 +382,28 @@ library(pander)
 values <- data.frame(Productivity=econ.census$Productivity)
 panderOptions('table.split.table', 300)
 panderOptions('big.mark', ',')
-pandoc.table(summary(values), caption='Table 1: Summary of Metro Manufacturing Productivity in 2007')
+pandoc.table(summary(values), style='rmarkdown', caption='Summary of Metro Manufacturing Productivity in 2007')
 ```
 
-Now to examine which metros are at the top and the bottom of the productivity spectrum
+Now to examine which metros are at the top and the bottom of the productivity spectrum.  The following table has the top preformers:  
 
 ```{r, results='asis', echo=FALSE}
 panderOptions('table.split.table', 300)
 panderOptions('big.mark', ',')
-pandoc.table(head(econ.census[,c('Metro','Productivity')]), caption='Table 2: Most Productive Metros in 2007')
+pandoc.table(head(econ.census[,c('Metro','Productivity')]), style='rmarkdown', caption='Most Productive Metros in 2007')
 ```
+  
+And this table has the bottom preformers:
 
 ```{r, results='asis', echo=FALSE}
 prod.tail <- tail(econ.census[,c('Metro','Productivity')],addrownums=FALSE)
 row.names(prod.tail) <- NULL
 panderOptions('table.split.table', 300)
 panderOptions('big.mark', ',')
-pandoc.table(prod.tail, caption='Table 3: Least Productive Metros in 2007')
+pandoc.table(prod.tail, style='rmarkdown', caption='Least Productive Metros in 2007')
 ```
+
+Here's a histogram of metro level manufacturing productivtiy to give a feel for the distribution:  
 
 ```{r, fig.margin = TRUE, fig.cap = "Manufacturing Productivity", message=FALSE, echo=FALSE, warning=FALSE}
 library(ggplot2)
@@ -477,7 +481,7 @@ descriptive.statistics <- data.frame('Variable'='Value Added per Prdn Worker Hou
   rbind(., data.frame('Variable'='% NonDurable', 'Unit'='%', 'Count'=nrow(study.data[!is.na(study.data$Percent.nondurable),]), 'Average'=mean(study.data$Percent.nondurable, na.rm=T), 'Median'=median(study.data$Percent.nondurable, na.rm=T), 'Max'=max(study.data$Percent.nondurable, na.rm=T), 'Min'=min(study.data$Percent.nondurable, na.rm=T), 'Range'=max(study.data$Percent.nondurable, na.rm=T)-min(study.data$Percent.nondurable, na.rm=T)))
 panderOptions('table.split.table', 300)
 panderOptions('big.mark', ',')
-pandoc.table(descriptive.statistics, style='rmarkdown', caption='Table 4: Descriptive Statistics for Study Data')
+pandoc.table(descriptive.statistics, style='rmarkdown', caption='Descriptive Statistics for Study Data')
 ```
 
 # Regresssion Model
@@ -523,5 +527,5 @@ lm.mtable <- mtable('Model 1' = lm.fit,
                     'Model 2' = lm2.fit,
                     summary.stats = c('N', 'adj. R-squared'))
 panderOptions('table.split.table', 300)
-pander(lm.mtable, caption='Table 5: Regression Model Results')
+pander(lm.mtable, caption='Regression Model Results')
 ```
